@@ -1,2 +1,2 @@
 # wa-mail
-This code solve 1 hour solution.
+This code solve 1 hour problem.
