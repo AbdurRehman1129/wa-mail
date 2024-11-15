@@ -1,1 +1,10 @@
-
+{
+    "body": "This is the email body.",
+    "subject": "Something {} Anything {}",
+    "senders": [
+        {"email": "username1@example.com", "password": "app_password1"},
+        {"email": "username2@example.com", "password": "app_password2"},
+        {"email": "username3@example.com", "password": "app_password3"}
+    ],
+    "receiver": "example@domain.com"
+}
