@@ -105,6 +105,10 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
 def automatic_sending(config):
     phone_numbers = input(f"{Fore.GREEN}Enter the phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
     phone_numbers = [number.strip() for number in phone_numbers]
+    
+    # Display the number of emails to be used
+    print(f"{Fore.GREEN}You have {len(config['senders'])} emails available. Enter {len(phone_numbers)} phone numbers.")
+    
     send_emails(config["senders"].copy(), config["receiver"], config["body"], config["subject"], phone_numbers)
     
     # Add random delay before showing "Press Enter to continue..."
@@ -179,11 +183,20 @@ def send_emails_in_range(config):
         input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
         return
 
+    # Calculate the number of emails in the range
+    num_emails = end_index - start_index + 1
+
+    # Display the selected range and number of emails
+    print(f"{Fore.GREEN}You have chosen {num_emails} emails starting from email number {start_index + 1} to email number {end_index + 1}.")
+    
+    # Extract the email range
+    selected_senders = config["senders"][start_index:end_index + 1]
+
+    # Ask for phone numbers
     phone_numbers = input(f"{Fore.GREEN}Enter the phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
     phone_numbers = [number.strip() for number in phone_numbers]
 
-    # Extract the email range
-    selected_senders = config["senders"][start_index:end_index + 1]
+    # Send the emails
     send_emails(selected_senders, config["receiver"], config["body"], config["subject"], phone_numbers)
     
     input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
