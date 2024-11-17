@@ -1,3 +1,4 @@
 colorama
 user_agents
 pyyaml
+pyfiglet
