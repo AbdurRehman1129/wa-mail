@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from email.message import EmailMessage
 from colorama import init, Fore, Style
 import pyfiglet
+import sys
 
 # Initialize Colorama
 init(autoreset=True)
@@ -26,7 +27,7 @@ def load_config(file_name="config.json"):
 # Function to clear the screen
 def clear_screen():
     command = "cls" if platform.system() == "Windows" else "clear"
-    subprocess.run(command, shell=True)
+    subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 # Function to display the banner
 def display_banner():
@@ -55,6 +56,16 @@ def show_menu(error_message=""):
     if error_message:
         print(f"{Fore.RED}{error_message}{Style.RESET_ALL}")
 
+# Countdown timer with consistent terminal behavior
+def countdown_timer(seconds):
+    for remaining in range(seconds, 0, -1):
+        sys.stdout.write(f"\r{Fore.YELLOW}Waiting {remaining} seconds before sending the next email...{Style.RESET_ALL}")
+        sys.stdout.flush()
+        time.sleep(1)
+    # Clear the line after countdown
+    sys.stdout.write("\r" + " " * 60 + "\r")
+    sys.stdout.flush()
+
 # Function to send emails with delay and random user-agent
 def send_emails(sender_emails, receiver_email, email_body, subject_template, phone_numbers):
     for i, phone_number in enumerate(phone_numbers):
@@ -67,10 +78,7 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
         sender_password = sender["password"]
 
         # Set the subject with the phone number placeholders
-        if subject_template.count("{}") == 2:
-            subject = subject_template.format(phone_number, phone_number)
-        else:
-            subject = subject_template.format(phone_number)
+        subject = subject_template.format(phone_number)
 
         msg = EmailMessage()
         msg['From'] = sender_email
@@ -87,7 +95,15 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
             
             # Record the email in the report.txt
             timestamp = datetime.now(timezone.utc).isoformat()  # Current UTC timestamp
-            subprocess.run(["python3", "report.py", sender_email, phone_number, timestamp])
+            try:
+                subprocess.run(
+                    ["python3", "report.py", sender_email, phone_number, timestamp],
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+            except subprocess.CalledProcessError:
+                print(f"{Fore.RED}Error executing report.py. Ensure it exists and is executable.{Style.RESET_ALL}")
 
         except Exception as e:
             print(f"Error sending email from {sender_email}: {e}")
@@ -95,22 +111,13 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
         # Delay only if this is not the last email
         if i < len(phone_numbers) - 1:
             delay = random.randint(15, 30)
-            for remaining in range(delay, 0, -1):
-                print(f"{Fore.YELLOW}Waiting {remaining} seconds before sending the next email...{Style.RESET_ALL}", end='\r')
-                time.sleep(1)
-            print(" " * 50, end='\r')  # Clear the line after countdown
+            countdown_timer(delay)
 
 # Function for automatic sending
 def automatic_sending(config):
     phone_numbers = input(f"{Fore.GREEN}Enter the phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
     phone_numbers = [number.strip() for number in phone_numbers]
     send_emails(config["senders"].copy(), config["receiver"], config["body"], config["subject"], phone_numbers)
-    
-    # Add random delay before showing "Press Enter to continue..."
-    if phone_numbers:
-        delay = random.randint(2, 5)  # Random delay of 2 to 5 seconds
-        time.sleep(delay)
-    
     input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
 
 # Function for manual sending
@@ -120,19 +127,16 @@ def manual_sending(config):
         display_banner()  # Show the banner
         print(f"{Fore.BLUE}CHOOSE AN EMAIL:{Style.RESET_ALL}")
         for index, sender in enumerate(config["senders"]):
-            print(f"{Fore.GREEN}{index + 1}.{Style.RESET_ALL} {sender['email']}{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}0.{Style.RESET_ALL} BACK TO MAIN MENU{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{index + 1}.{Style.RESET_ALL} {sender['email']}")
+        print(f"{Fore.GREEN}0.{Style.RESET_ALL} BACK TO MAIN MENU")
 
         email_choice = input(f"{Fore.GREEN}Enter the number of the email you want to use: {Style.RESET_ALL}")
 
         if email_choice.isdigit() and 1 <= int(email_choice) <= len(config["senders"]):
             selected_sender = config["senders"][int(email_choice) - 1]
             phone_number = input(f"{Fore.GREEN}Enter the phone number to send: {Style.RESET_ALL}")
+            subject = config["subject"].format(phone_number)
 
-            # Set the subject with the phone number
-            subject = config["subject"].format(phone_number, phone_number)
-
-            # Create the email message
             msg = EmailMessage()
             msg['From'] = selected_sender["email"]
             msg['To'] = config["receiver"]
@@ -146,9 +150,16 @@ def manual_sending(config):
                     server.send_message(msg)
                     print(f"EMAIL SENT FROM {Fore.GREEN}{selected_sender['email']}{Style.RESET_ALL} TO {Fore.BLUE}{config['receiver']}{Style.RESET_ALL} WITH PHONE NUMBER {Fore.YELLOW}{phone_number}{Style.RESET_ALL} IN SUBJECT")
                 
-                # Record the email in the report.txt
                 timestamp = datetime.now(timezone.utc).isoformat()
-                subprocess.run(["python3", "report.py", selected_sender["email"], phone_number, timestamp])
+                try:
+                    subprocess.run(
+                        ["python3", "report.py", selected_sender["email"], phone_number, timestamp],
+                        check=True,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL
+                    )
+                except subprocess.CalledProcessError:
+                    print(f"{Fore.RED}Error executing report.py. Ensure it exists and is executable.{Style.RESET_ALL}")
 
             except Exception as e:
                 print(f"Error sending email from {selected_sender['email']}: {e}")
@@ -164,7 +175,6 @@ def manual_sending(config):
 config = load_config()
 
 if config:
-    # Main execution loop
     while True:
         show_menu()
         choice = input(f"{Fore.GREEN}Choose an option: {Style.RESET_ALL}")
