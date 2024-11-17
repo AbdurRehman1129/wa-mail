@@ -88,11 +88,16 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
             # Record the email in the report.txt
             timestamp = datetime.now(timezone.utc).isoformat()  # Current UTC timestamp
             try:
-                # Construct the full path to report.py
-                script_path = os.path.join(os.path.dirname(__file__), "report.py")
+                # Construct the full path to report.py and print the current working directory
+                current_working_directory = os.getcwd()
+                print(f"Current working directory: {current_working_directory}")
+                
+                script_path = os.path.join(current_working_directory, "report.py")
+                if not os.path.exists(script_path):
+                    print(f"{Fore.RED}Error: report.py not found in {current_working_directory}. Ensure the file exists.{Style.RESET_ALL}")
+                    return
+
                 subprocess.run(["python3", script_path, sender_email, phone_number, timestamp], check=True)
-            except FileNotFoundError:
-                print(f"{Fore.RED}Error: report.py not found. Ensure the file exists in the correct directory.{Style.RESET_ALL}")
             except Exception as e:
                 print(f"{Fore.RED}Error executing report.py: {e}{Style.RESET_ALL}")
 
@@ -151,11 +156,16 @@ def manual_sending(config):
                 # Record the email in the report.txt
                 timestamp = datetime.now(timezone.utc).isoformat()
                 try:
-                    # Construct the full path to report.py
-                    script_path = os.path.join(os.path.dirname(__file__), "report.py")
+                    # Construct the full path to report.py and print the current working directory
+                    current_working_directory = os.getcwd()
+                    print(f"Current working directory: {current_working_directory}")
+                    
+                    script_path = os.path.join(current_working_directory, "report.py")
+                    if not os.path.exists(script_path):
+                        print(f"{Fore.RED}Error: report.py not found in {current_working_directory}. Ensure the file exists.{Style.RESET_ALL}")
+                        return
+
                     subprocess.run(["python3", script_path, selected_sender["email"], phone_number, timestamp], check=True)
-                except FileNotFoundError:
-                    print(f"{Fore.RED}Error: report.py not found. Ensure the file exists in the correct directory.{Style.RESET_ALL}")
                 except Exception as e:
                     print(f"{Fore.RED}Error executing report.py: {e}{Style.RESET_ALL}")
 
