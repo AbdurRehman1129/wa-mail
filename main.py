@@ -51,7 +51,8 @@ def show_menu(error_message=""):
     print(f"{Fore.BLUE}MENU:{Style.RESET_ALL}")
     print(f"{Fore.GREEN}1.{Style.RESET_ALL} AUTOMATIC SENDING (1ST NUMBER BY 1ST EMAIL)")
     print(f"{Fore.GREEN}2.{Style.RESET_ALL} MANUAL SENDING (CHOOSE EMAIL)")
-    print(f"{Fore.GREEN}3.{Style.RESET_ALL} EXIT")
+    print(f"{Fore.GREEN}3.{Style.RESET_ALL} SEND EMAILS IN RANGE")
+    print(f"{Fore.GREEN}4.{Style.RESET_ALL} EXIT")
     if error_message:
         print(f"{Fore.RED}{error_message}{Style.RESET_ALL}")
 
@@ -160,6 +161,33 @@ def manual_sending(config):
             print(f"{Fore.RED}Invalid email choice. Please try again.{Style.RESET_ALL}")
             input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
 
+# Function for sending emails in a range
+def send_emails_in_range(config):
+    clear_screen()
+    display_banner()
+
+    print(f"{Fore.BLUE}CHOOSE EMAIL RANGE:{Style.RESET_ALL}")
+    for index, sender in enumerate(config["senders"]):
+        print(f"{Fore.GREEN}{index + 1}.{Style.RESET_ALL} {sender['email']}{Style.RESET_ALL}")
+    
+    start_index = int(input(f"{Fore.GREEN}Enter the number of the first email (starting from 1): {Style.RESET_ALL}")) - 1
+    end_index = int(input(f"{Fore.GREEN}Enter the number of the last email (starting from 1): {Style.RESET_ALL}")) - 1
+
+    # Check for valid range
+    if start_index < 0 or end_index >= len(config["senders"]) or start_index > end_index:
+        print(f"{Fore.RED}Invalid range. Please try again.{Style.RESET_ALL}")
+        input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
+        return
+
+    phone_numbers = input(f"{Fore.GREEN}Enter the phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
+    phone_numbers = [number.strip() for number in phone_numbers]
+
+    # Extract the email range
+    selected_senders = config["senders"][start_index:end_index + 1]
+    send_emails(selected_senders, config["receiver"], config["body"], config["subject"], phone_numbers)
+    
+    input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
+
 # Load config
 config = load_config()
 
@@ -174,6 +202,8 @@ if config:
         elif choice == '2':
             manual_sending(config)
         elif choice == '3':
+            send_emails_in_range(config)
+        elif choice == '4':
             print(f"{Fore.YELLOW}Exiting the program...{Style.RESET_ALL}")
             break
         else:
