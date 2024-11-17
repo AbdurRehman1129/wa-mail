@@ -187,7 +187,7 @@ def send_emails_in_range(config):
     num_emails = end_index - start_index + 1
 
     # Display the selected range and number of emails
-    print(f"{Fore.GREEN}You have chosen {Fore.YELLOW}{num_emails}{Style.RESET_ALL} emails starting from email number {Fore.YELLOW}{start_index + 1}{Style.RESET_ALL} to email number {Fore.YELLOW}{end_index + 1}{Style.RESET_ALL}.")
+    print(f"{Fore.GREEN}You have chosen {Fore.YELLOW}{num_emails}{Style.RESET_ALL} {Fore.GREEN}emails starting from email number {Fore.YELLOW}{start_index + 1}{Style.RESET_ALL} {Fore.GREEN}to email number {Fore.YELLOW}{end_index + 1}{Style.RESET_ALL}.")
     
     # Extract the email range
     selected_senders = config["senders"][start_index:end_index + 1]
