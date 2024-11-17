@@ -132,13 +132,18 @@ def manual_sending(config):
             # Set the subject with the phone number
             subject = config["subject"].format(phone_number, phone_number)
 
-            email_text = f"Subject: {subject}\n\n{config['body']}"
+            # Create the email message
+            msg = EmailMessage()
+            msg['From'] = selected_sender["email"]
+            msg['To'] = config["receiver"]
+            msg['Subject'] = subject
+            msg.set_content(config["body"])
 
             try:
                 with smtplib.SMTP("smtp.gmail.com", 587) as server:
                     server.starttls()
                     server.login(selected_sender["email"], selected_sender["password"])
-                    server.sendmail(selected_sender["email"], config["receiver"], email_text)
+                    server.send_message(msg)
                     print(f"EMAIL SENT FROM {Fore.GREEN}{selected_sender['email']}{Style.RESET_ALL} TO {Fore.BLUE}{config['receiver']}{Style.RESET_ALL} WITH PHONE NUMBER {Fore.YELLOW}{phone_number}{Style.RESET_ALL} IN SUBJECT")
                 
                 # Record the email in the report.txt
