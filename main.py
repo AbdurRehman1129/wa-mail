@@ -26,8 +26,14 @@ def load_config(file_name="config.json"):
 
 # Function to clear the screen
 def clear_screen():
-    command = "cls" if platform.system() == "Windows" else "clear"
-    subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        if platform.system() == "Windows":
+            subprocess.run("cls", shell=True)
+        else:
+            subprocess.run("clear", shell=True)
+    except Exception:
+        # Fallback: Print 100 blank lines if clear command fails
+        print("\n" * 100)
 
 # Function to display the banner
 def display_banner():
