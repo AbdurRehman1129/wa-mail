@@ -100,8 +100,9 @@ def automatic_sending(config):
         clear_screen()
         display_banner()
         total_emails = len(config['senders'])
-        print(f"{Fore.GREEN}You have a total of {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} emails available.")
-        print(f"{Fore.YELLOW}You can enter up to {total_emails} phone numbers.{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}AUTOMATIC SENDING{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}You have a total of {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} {Fore.GREEN}emails available.")
+        print(f"{Fore.YELLOW}You can enter up to {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} {Fore.GREEN}phone numbers.{Style.RESET_ALL}")
         print(f"{Fore.GREEN}Type '0' to return to the main menu.{Style.RESET_ALL}")
 
         phone_numbers = input(f"{Fore.GREEN}Enter phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
@@ -124,6 +125,7 @@ def manual_sending(config):
     while True:
         clear_screen()
         display_banner()
+        print(f"{Fore.LIGHTCYAN_EX}MANUAL SENDING{Style.RESET_ALL}")
         print(f"{Fore.GREEN}Available emails:{Style.RESET_ALL}")
         for idx, sender in enumerate(config["senders"], start=1):
             print(f"{Fore.YELLOW}{idx}. {sender['email']}{Style.RESET_ALL}")
@@ -149,6 +151,7 @@ def send_emails_in_range(config):
         clear_screen()
         display_banner()
         try:
+            print(f"{Fore.LIGHTCYAN_EX}RANGE SLECTION{Style.RESET_ALL}")
             start = int(input(f"{Fore.GREEN}Enter the start email index (1-{len(config['senders'])}): {Style.RESET_ALL}")) - 1
             end = int(input(f"{Fore.GREEN}Enter the end email index (1-{len(config['senders'])}): {Style.RESET_ALL}"))
             if start < 0 or end > len(config["senders"]) or start >= end:
