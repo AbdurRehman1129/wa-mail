@@ -129,7 +129,7 @@ def manual_sending(config):
         print(f"{Fore.GREEN}Available emails:{Style.RESET_ALL}")
         for idx, sender in enumerate(config["senders"], start=1):
             print(f"{Fore.LIGHTMAGENTA_EX}{idx}. {sender['email']}{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}Type '0' to return to the main menu.{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Type '{Style.RESET_ALL}{Fore.YELLOW}0{Style.RESET_ALL}{Fore.GREEN}' to return to the main menu.{Style.RESET_ALL}")
 
         choice = input(f"{Fore.GREEN}Choose an email by number: {Style.RESET_ALL}")
         if choice == '0':
