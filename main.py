@@ -95,7 +95,7 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
 
         # Delay only if this is not the last email
         if i < len(phone_numbers) - 1:
-            delay = random.randint(15, 30)
+            delay = random.randint(7, 15)
             for remaining in range(delay, 0, -1):
                 print(f"{Fore.YELLOW}Waiting {remaining} seconds before sending the next email...{Style.RESET_ALL}", end='\r')
                 time.sleep(1)
@@ -107,7 +107,7 @@ def automatic_sending(config):
     phone_numbers = [number.strip() for number in phone_numbers]
     
     # Display the number of emails to be used
-    print(f"{Fore.GREEN}You have {len(config['senders'])} emails available. Enter {len(phone_numbers)} phone numbers.")
+    print(f"{Fore.GREEN}You have {Fore.YELLOW}{len(config['senders'])} emails available. Enter {Fore.YELLOW}{len(config['senders'])} phone numbers.")
     
     send_emails(config["senders"].copy(), config["receiver"], config["body"], config["subject"], phone_numbers)
     
@@ -187,7 +187,7 @@ def send_emails_in_range(config):
     num_emails = end_index - start_index + 1
 
     # Display the selected range and number of emails
-    print(f"{Fore.GREEN}You have chosen {num_emails} emails starting from email number {start_index + 1} to email number {end_index + 1}.")
+    print(f"{Fore.GREEN}You have chosen {Fore.YELLOW}{num_emails} emails starting from email number {Fore.YELLOW}{start_index + 1} to email number {Fore.YELLOW}{end_index + 1}.")
     
     # Extract the email range
     selected_senders = config["senders"][start_index:end_index + 1]
