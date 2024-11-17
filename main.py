@@ -99,8 +99,9 @@ def automatic_sending(config):
     while True:
         clear_screen()
         display_banner()
-        print(f"{Fore.GREEN}You have {Style.RESET_ALL}{Fore.YELLOW}{len(config['senders'])}{Style.RESET_ALL} emails available.")
-        print(f"{Fore.YELLOW}Enter up to {len(config['senders'])} phone numbers.{Style.RESET_ALL}")
+        total_emails = len(config['senders'])
+        print(f"{Fore.GREEN}You have a total of {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} emails available.")
+        print(f"{Fore.YELLOW}You can enter up to {total_emails} phone numbers.{Style.RESET_ALL}")
         print(f"{Fore.GREEN}Type '0' to return to the main menu.{Style.RESET_ALL}")
 
         phone_numbers = input(f"{Fore.GREEN}Enter phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
@@ -109,8 +110,8 @@ def automatic_sending(config):
         if len(phone_numbers) == 1 and phone_numbers[0] == '0':
             break
 
-        if len(phone_numbers) > len(config["senders"]):
-            print(f"{Fore.RED}You can only enter up to {len(config['senders'])} phone numbers. Please try again.{Style.RESET_ALL}")
+        if len(phone_numbers) > total_emails:
+            print(f"{Fore.RED}You can only enter up to {total_emails} phone numbers. Please try again.{Style.RESET_ALL}")
             input(f"{Fore.GREEN}Press Enter to retry...{Style.RESET_ALL}")
             continue
 
@@ -120,11 +121,45 @@ def automatic_sending(config):
 
 # Function for manual sending
 def manual_sending(config):
-    # Unchanged for brevity, but similar improvements can be applied.
+    while True:
+        clear_screen()
+        display_banner()
+        print(f"{Fore.GREEN}Available emails:{Style.RESET_ALL}")
+        for idx, sender in enumerate(config["senders"], start=1):
+            print(f"{Fore.YELLOW}{idx}. {sender['email']}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Type '0' to return to the main menu.{Style.RESET_ALL}")
+
+        choice = input(f"{Fore.GREEN}Choose an email by number: {Style.RESET_ALL}")
+        if choice == '0':
+            break
+        try:
+            index = int(choice) - 1
+            if index < 0 or index >= len(config["senders"]):
+                raise ValueError
+            sender = config["senders"][index]
+            phone_number = input(f"{Fore.GREEN}Enter the phone number to include in the subject: {Style.RESET_ALL}")
+            send_emails([sender], config["receiver"], config["body"], config["subject"], [phone_number])
+        except ValueError:
+            print(f"{Fore.RED}Invalid choice. Please try again.{Style.RESET_ALL}")
+            input(f"{Fore.GREEN}Press Enter to retry...{Style.RESET_ALL}")
 
 # Function for sending emails in a range
 def send_emails_in_range(config):
-    # Similar improvements for handling invalid input loops can be applied.
+    while True:
+        clear_screen()
+        display_banner()
+        try:
+            start = int(input(f"{Fore.GREEN}Enter the start email index (1-{len(config['senders'])}): {Style.RESET_ALL}")) - 1
+            end = int(input(f"{Fore.GREEN}Enter the end email index (1-{len(config['senders'])}): {Style.RESET_ALL}"))
+            if start < 0 or end > len(config["senders"]) or start >= end:
+                raise ValueError
+            phone_numbers = input(f"{Fore.GREEN}Enter phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
+            phone_numbers = [number.strip() for number in phone_numbers]
+            send_emails(config["senders"][start:end], config["receiver"], config["body"], config["subject"], phone_numbers)
+            break
+        except ValueError:
+            print(f"{Fore.RED}Invalid input. Please try again.{Style.RESET_ALL}")
+            input(f"{Fore.GREEN}Press Enter to retry...{Style.RESET_ALL}")
 
 # Load config
 config = load_config()
