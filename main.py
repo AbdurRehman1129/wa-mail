@@ -87,7 +87,14 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
             
             # Record the email in the report.txt
             timestamp = datetime.now(timezone.utc).isoformat()  # Current UTC timestamp
-            subprocess.run(["python3", "report.py", sender_email, phone_number, timestamp])
+            try:
+                # Construct the full path to report.py
+                script_path = os.path.join(os.path.dirname(__file__), "report.py")
+                subprocess.run(["python3", script_path, sender_email, phone_number, timestamp], check=True)
+            except FileNotFoundError:
+                print(f"{Fore.RED}Error: report.py not found. Ensure the file exists in the correct directory.{Style.RESET_ALL}")
+            except Exception as e:
+                print(f"{Fore.RED}Error executing report.py: {e}{Style.RESET_ALL}")
 
         except Exception as e:
             print(f"Error sending email from {sender_email}: {e}")
@@ -132,23 +139,25 @@ def manual_sending(config):
             # Set the subject with the phone number
             subject = config["subject"].format(phone_number, phone_number)
 
-            # Create the email message
-            msg = EmailMessage()
-            msg['From'] = selected_sender["email"]
-            msg['To'] = config["receiver"]
-            msg['Subject'] = subject
-            msg.set_content(config["body"])
+            email_text = f"Subject: {subject}\n\n{config['body']}"
 
             try:
                 with smtplib.SMTP("smtp.gmail.com", 587) as server:
                     server.starttls()
                     server.login(selected_sender["email"], selected_sender["password"])
-                    server.send_message(msg)
+                    server.sendmail(selected_sender["email"], config["receiver"], email_text)
                     print(f"EMAIL SENT FROM {Fore.GREEN}{selected_sender['email']}{Style.RESET_ALL} TO {Fore.BLUE}{config['receiver']}{Style.RESET_ALL} WITH PHONE NUMBER {Fore.YELLOW}{phone_number}{Style.RESET_ALL} IN SUBJECT")
                 
                 # Record the email in the report.txt
                 timestamp = datetime.now(timezone.utc).isoformat()
-                subprocess.run(["python3", "report.py", selected_sender["email"], phone_number, timestamp])
+                try:
+                    # Construct the full path to report.py
+                    script_path = os.path.join(os.path.dirname(__file__), "report.py")
+                    subprocess.run(["python3", script_path, selected_sender["email"], phone_number, timestamp], check=True)
+                except FileNotFoundError:
+                    print(f"{Fore.RED}Error: report.py not found. Ensure the file exists in the correct directory.{Style.RESET_ALL}")
+                except Exception as e:
+                    print(f"{Fore.RED}Error executing report.py: {e}{Style.RESET_ALL}")
 
             except Exception as e:
                 print(f"Error sending email from {selected_sender['email']}: {e}")
