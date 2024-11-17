@@ -150,19 +150,34 @@ def send_emails_in_range(config):
     while True:
         clear_screen()
         display_banner()
+        print(f"{Fore.LIGHTCYAN_EX}RANGE SELECTION{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Type '{Style.RESET_ALL}{Fore.YELLOW}0{Style.RESET_ALL} {Fore.GREEN}' at any time to return to the main menu.{Style.RESET_ALL}")
+        
         try:
-            print(f"{Fore.LIGHTCYAN_EX}RANGE SLECTION{Style.RESET_ALL}")
-            start = int(input(f"{Fore.GREEN}Enter the start email index (1-{len(config['senders'])}): {Style.RESET_ALL}")) - 1
-            end = int(input(f"{Fore.GREEN}Enter the end email index (1-{len(config['senders'])}): {Style.RESET_ALL}"))
+            start_input = input(f"{Fore.GREEN}Enter the start email index (1-{len(config['senders'])}): {Style.RESET_ALL}")
+            if start_input.strip() == '0':
+                break
+            start = int(start_input) - 1
+            
+            end_input = input(f"{Fore.GREEN}Enter the end email index (1-{len(config['senders'])}): {Style.RESET_ALL}")
+            if end_input.strip() == '0':
+                break
+            end = int(end_input)
+            
             if start < 0 or end > len(config["senders"]) or start >= end:
                 raise ValueError
-            phone_numbers = input(f"{Fore.GREEN}Enter phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
-            phone_numbers = [number.strip() for number in phone_numbers]
+            
+            phone_numbers_input = input(f"{Fore.GREEN}Enter phone numbers (separated by commas): {Style.RESET_ALL}")
+            if phone_numbers_input.strip() == '0':
+                break
+            phone_numbers = [number.strip() for number in phone_numbers_input.split(',')]
+            
             send_emails(config["senders"][start:end], config["receiver"], config["body"], config["subject"], phone_numbers)
             break
         except ValueError:
             print(f"{Fore.RED}Invalid input. Please try again.{Style.RESET_ALL}")
             input(f"{Fore.GREEN}Press Enter to retry...{Style.RESET_ALL}")
+
 
 # Load config
 config = load_config()
