@@ -103,7 +103,7 @@ def automatic_sending(config):
         print(f"{Fore.LIGHTCYAN_EX}AUTOMATIC SENDING{Style.RESET_ALL}")
         print(f"{Fore.GREEN}You have a total of {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} {Fore.GREEN}emails available.")
         print(f"{Fore.GREEN}You can enter up to {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} {Fore.GREEN}phone numbers.{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}Type '{Style.RESET_ALL}{Fore.YELLOW}0{Style.RESET_ALL} {Fore.GREEN}' to return to the main menu.{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Type '{Style.RESET_ALL}{Fore.YELLOW}0{Style.RESET_ALL}{Fore.GREEN}' to return to the main menu.{Style.RESET_ALL}")
 
         phone_numbers = input(f"{Fore.GREEN}Enter phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
         phone_numbers = [number.strip() for number in phone_numbers]
@@ -125,10 +125,10 @@ def manual_sending(config):
     while True:
         clear_screen()
         display_banner()
-        print(f"{Fore.LIGHTCYAN_EX}MANUAL SENDING{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}MANUAL SENDING{Style.RESET_ALL}")
         print(f"{Fore.GREEN}Available emails:{Style.RESET_ALL}")
         for idx, sender in enumerate(config["senders"], start=1):
-            print(f"{Fore.YELLOW}{idx}. {sender['email']}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}{idx}. {sender['email']}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}Type '0' to return to the main menu.{Style.RESET_ALL}")
 
         choice = input(f"{Fore.GREEN}Choose an email by number: {Style.RESET_ALL}")
@@ -150,8 +150,8 @@ def send_emails_in_range(config):
     while True:
         clear_screen()
         display_banner()
-        print(f"{Fore.LIGHTCYAN_EX}RANGE SELECTION{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}Type '{Style.RESET_ALL}{Fore.YELLOW}0{Style.RESET_ALL} {Fore.GREEN}' at any time to return to the main menu.{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}RANGE SELECTION{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Type '{Style.RESET_ALL}{Fore.YELLOW}0{Style.RESET_ALL}{Fore.GREEN}' at any time to return to the main menu.{Style.RESET_ALL}")
         
         try:
             start_input = input(f"{Fore.GREEN}Enter the start email index (1-{len(config['senders'])}): {Style.RESET_ALL}")
