@@ -44,7 +44,7 @@ def display_banner():
 def show_menu(error_message=""):
     clear_screen()
     display_banner()
-    print(f"{Fore.BLUE}MENU:{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}MENU:{Style.RESET_ALL}")
     print(f"{Fore.GREEN}1.{Style.RESET_ALL} AUTOMATIC SENDING (1ST NUMBER BY 1ST EMAIL)")
     print(f"{Fore.GREEN}2.{Style.RESET_ALL} MANUAL SENDING (CHOOSE EMAIL)")
     print(f"{Fore.GREEN}3.{Style.RESET_ALL} SEND EMAILS IN RANGE")
@@ -102,8 +102,8 @@ def automatic_sending(config):
         total_emails = len(config['senders'])
         print(f"{Fore.LIGHTCYAN_EX}AUTOMATIC SENDING{Style.RESET_ALL}")
         print(f"{Fore.GREEN}You have a total of {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} {Fore.GREEN}emails available.")
-        print(f"{Fore.YELLOW}You can enter up to {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} {Fore.GREEN}phone numbers.{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}Type '0' to return to the main menu.{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}You can enter up to {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} {Fore.GREEN}phone numbers.{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Type '{Style.RESET_ALL}{Fore.YELLOW}0{Style.RESET_ALL} {Fore.GREEN}' to return to the main menu.{Style.RESET_ALL}")
 
         phone_numbers = input(f"{Fore.GREEN}Enter phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
         phone_numbers = [number.strip() for number in phone_numbers]
