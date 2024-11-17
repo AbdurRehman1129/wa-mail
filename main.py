@@ -103,20 +103,26 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
 
 # Function for automatic sending
 def automatic_sending(config):
-    phone_numbers = input(f"{Fore.GREEN}Enter the phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
-    phone_numbers = [number.strip() for number in phone_numbers]
-    
-    # Display the number of emails to be used
-    print(f"{Fore.GREEN}You have {Style.RESET_ALL}{Fore.YELLOW}{len(config['senders'])}{Style.RESET_ALL} emails available. Enter {Fore.YELLOW}{len(config['senders'])}{Style.RESET_ALL} phone numbers.")
-    
-    send_emails(config["senders"].copy(), config["receiver"], config["body"], config["subject"], phone_numbers)
-    
-    # Add random delay before showing "Press Enter to continue..."
-    if phone_numbers:
-        delay = random.randint(2, 5)  # Random delay of 2 to 5 seconds
-        time.sleep(delay)
-    
-    input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
+    while True:
+        phone_numbers = input(f"{Fore.GREEN}Enter the phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
+        phone_numbers = [number.strip() for number in phone_numbers]
+        
+        # Display the number of emails to be used
+        print(f"{Fore.GREEN}You have {Style.RESET_ALL}{Fore.YELLOW}{len(config['senders'])}{Style.RESET_ALL} emails available. Enter {Fore.YELLOW}{len(config['senders'])}{Style.RESET_ALL} phone numbers.")
+        
+        if len(phone_numbers) > len(config['senders']):
+            print(f"{Fore.RED}You can only enter up to {len(config['senders'])} phone numbers. Please try again.{Style.RESET_ALL}")
+            continue
+
+        send_emails(config["senders"].copy(), config["receiver"], config["body"], config["subject"], phone_numbers)
+        
+        # Add random delay before showing "Press Enter to continue..."
+        if phone_numbers:
+            delay = random.randint(2, 5)  # Random delay of 2 to 5 seconds
+            time.sleep(delay)
+        
+        input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
+        break
 
 # Function for manual sending
 def manual_sending(config):
@@ -167,39 +173,43 @@ def manual_sending(config):
 
 # Function for sending emails in a range
 def send_emails_in_range(config):
-    clear_screen()
-    display_banner()
+    while True:
+        clear_screen()
+        display_banner()
 
-    print(f"{Fore.BLUE}CHOOSE EMAIL RANGE:{Style.RESET_ALL}")
-    for index, sender in enumerate(config["senders"]):
-        print(f"{Fore.GREEN}{index + 1}.{Style.RESET_ALL} {sender['email']}{Style.RESET_ALL}")
-    
-    start_index = int(input(f"{Fore.GREEN}Enter the number of the first email (starting from 1): {Style.RESET_ALL}")) - 1
-    end_index = int(input(f"{Fore.GREEN}Enter the number of the last email (starting from 1): {Style.RESET_ALL}")) - 1
+        print(f"{Fore.BLUE}CHOOSE EMAIL RANGE:{Style.RESET_ALL}")
+        for index, sender in enumerate(config["senders"]):
+            print(f"{Fore.GREEN}{index + 1}.{Style.RESET_ALL} {sender['email']}{Style.RESET_ALL}")
+        
+        start_index = int(input(f"{Fore.GREEN}Enter the number of the first email (starting from 1): {Style.RESET_ALL}")) - 1
+        end_index = int(input(f"{Fore.GREEN}Enter the number of the last email (starting from 1): {Style.RESET_ALL}")) - 1
 
-    # Check for valid range
-    if start_index < 0 or end_index >= len(config["senders"]) or start_index > end_index:
-        print(f"{Fore.RED}Invalid range. Please try again.{Style.RESET_ALL}")
+        # Check for valid range
+        if start_index < 0 or end_index >= len(config["senders"]) or start_index > end_index:
+            print(f"{Fore.RED}Invalid range. Please try again or enter 0 to go back to the main menu.{Style.RESET_ALL}")
+            go_back = input(f"{Fore.GREEN}Enter 0 to go back to the main menu: {Style.RESET_ALL}")
+            if go_back == '0':
+                break
+            continue
+
+        # Calculate the number of emails in the range
+        num_emails = end_index - start_index + 1
+
+        # Display the selected range and number of emails
+        print(f"{Fore.GREEN}You have chosen {Fore.YELLOW}{num_emails}{Style.RESET_ALL} {Fore.GREEN}emails starting from email number {Fore.YELLOW}{start_index + 1}{Style.RESET_ALL} {Fore.GREEN}to email number {Fore.YELLOW}{end_index + 1}{Style.RESET_ALL}.")
+        
+        # Extract the email range
+        selected_senders = config["senders"][start_index:end_index + 1]
+
+        # Ask for phone numbers
+        phone_numbers = input(f"{Fore.GREEN}Enter the phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
+        phone_numbers = [number.strip() for number in phone_numbers]
+
+        # Send the emails
+        send_emails(selected_senders, config["receiver"], config["body"], config["subject"], phone_numbers)
+        
         input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
-        return
-
-    # Calculate the number of emails in the range
-    num_emails = end_index - start_index + 1
-
-    # Display the selected range and number of emails
-    print(f"{Fore.GREEN}You have chosen {Fore.YELLOW}{num_emails}{Style.RESET_ALL} {Fore.GREEN}emails starting from email number {Fore.YELLOW}{start_index + 1}{Style.RESET_ALL} {Fore.GREEN}to email number {Fore.YELLOW}{end_index + 1}{Style.RESET_ALL}.")
-    
-    # Extract the email range
-    selected_senders = config["senders"][start_index:end_index + 1]
-
-    # Ask for phone numbers
-    phone_numbers = input(f"{Fore.GREEN}Enter the phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
-    phone_numbers = [number.strip() for number in phone_numbers]
-
-    # Send the emails
-    send_emails(selected_senders, config["receiver"], config["body"], config["subject"], phone_numbers)
-    
-    input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
+        break
 
 # Load config
 config = load_config()
