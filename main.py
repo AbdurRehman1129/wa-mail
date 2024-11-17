@@ -107,7 +107,7 @@ def automatic_sending(config):
     phone_numbers = [number.strip() for number in phone_numbers]
     
     # Display the number of emails to be used
-    print(f"{Fore.GREEN}You have {Fore.YELLOW}{len(config['senders'])} emails available. Enter {Fore.YELLOW}{len(config['senders'])} phone numbers.")
+    print(f"{Fore.GREEN}You have {Style.RESET_ALL}{Fore.YELLOW}{len(config['senders'])}{Style.RESET_ALL} emails available. Enter {Fore.YELLOW}{len(config['senders'])}{Style.RESET_ALL} phone numbers.")
     
     send_emails(config["senders"].copy(), config["receiver"], config["body"], config["subject"], phone_numbers)
     
@@ -187,7 +187,7 @@ def send_emails_in_range(config):
     num_emails = end_index - start_index + 1
 
     # Display the selected range and number of emails
-    print(f"{Fore.GREEN}You have chosen {Fore.YELLOW}{num_emails} emails starting from email number {Fore.YELLOW}{start_index + 1} to email number {Fore.YELLOW}{end_index + 1}.")
+    print(f"{Fore.GREEN}You have chosen {Fore.YELLOW}{num_emails}{Style.RESET_ALL} emails starting from email number {Fore.YELLOW}{start_index + 1}{Style.RESET_ALL} to email number {Fore.YELLOW}{end_index + 1}{Style.RESET_ALL}.")
     
     # Extract the email range
     selected_senders = config["senders"][start_index:end_index + 1]
