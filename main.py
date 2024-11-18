@@ -38,7 +38,7 @@ def display_banner():
     
     print(Fore.CYAN + centered_banner)
     # Center the author line based on terminal width
-    author_line = f"Author/Github: @AbdurRehman1129"
+    author_line = f"Author/Github: {Fore.GREEN}@AbdurRehman1129"
     print(Fore.YELLOW + author_line.center(terminal_width))
 
 
