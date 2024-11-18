@@ -37,8 +37,10 @@ def display_banner():
     centered_banner = '\n'.join(line.center(terminal_width) for line in banner_text.splitlines())
     
     print(Fore.CYAN + centered_banner)
-    author_line = f"{Fore.YELLOW}Author/Github: {Style.RESET_ALL}{Fore.GREEN}@AbdurRehman1129"
-    print(author_line.center(terminal_width))
+    # Center the author line based on terminal width
+    author_line = f"Author/Github: @AbdurRehman1129"
+    print(Fore.YELLOW + author_line.center(terminal_width))
+
 
 # Function to show the main menu
 def show_menu(error_message=""):
