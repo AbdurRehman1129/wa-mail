@@ -47,7 +47,7 @@ def show_menu(error_message=""):
     clear_screen()
     display_banner()
     print(f"{Fore.CYAN}MENU:{Style.RESET_ALL}")
-    print(f"{Fore.GREEN}1.{Style.RESET_ALL} AUTOMATIC SENDING (1ST NUMBER BY 1ST EMAIL)")
+    print(f"{Fore.GREEN}1.{Style.RESET_ALL} AUTOMATIC SENDING (FIRST NUMBER BY LAST EMAIL)")
     print(f"{Fore.GREEN}2.{Style.RESET_ALL} MANUAL SENDING (CHOOSE EMAIL)")
     print(f"{Fore.GREEN}3.{Style.RESET_ALL} SEND EMAILS IN RANGE")
     print(f"{Fore.GREEN}4.{Style.RESET_ALL} INVERSE SENDING (FIRST NUMBER WITH LAST EMAIL)")
