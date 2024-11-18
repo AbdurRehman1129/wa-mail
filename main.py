@@ -48,13 +48,15 @@ def show_menu(error_message=""):
     print(f"{Fore.GREEN}1.{Style.RESET_ALL} AUTOMATIC SENDING (1ST NUMBER BY 1ST EMAIL)")
     print(f"{Fore.GREEN}2.{Style.RESET_ALL} MANUAL SENDING (CHOOSE EMAIL)")
     print(f"{Fore.GREEN}3.{Style.RESET_ALL} SEND EMAILS IN RANGE")
-    print(f"{Fore.GREEN}4.{Style.RESET_ALL} EXIT")
+    print(f"{Fore.GREEN}4.{Style.RESET_ALL} INVERSE SENDING (FIRST NUMBER WITH LAST EMAIL)")
+    print(f"{Fore.GREEN}5.{Style.RESET_ALL} EXIT")
     if error_message:
         print(f"{Fore.RED}{error_message}{Style.RESET_ALL}")
 
 # Function to send emails with delay and random user-agent
 def send_emails(sender_emails, receiver_email, email_body, subject_template, phone_numbers):
-    for i, phone_number in enumerate(phone_numbers):
+    i = 0
+    while i < len(phone_numbers):
         if not sender_emails:
             print(f"{Fore.RED}No sender emails available.{Style.RESET_ALL}")
             return
@@ -64,9 +66,9 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
         sender_password = sender["password"]
 
         if subject_template.count("{}") == 2:
-            subject = subject_template.format(phone_number, phone_number)
+            subject = subject_template.format(phone_numbers[i], phone_numbers[i])
         else:
-            subject = subject_template.format(phone_number)
+            subject = subject_template.format(phone_numbers[i])
 
         msg = EmailMessage()
         msg['From'] = sender_email
@@ -79,15 +81,19 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
                 server.starttls()
                 server.login(sender_email, sender_password)
                 server.send_message(msg)
-                print(f"EMAIL SENT FROM {Fore.GREEN}{sender_email}{Style.RESET_ALL} TO {Fore.BLUE}{receiver_email}{Style.RESET_ALL} WITH PHONE NUMBER {Fore.YELLOW}{phone_number}{Style.RESET_ALL} IN SUBJECT")
+                print(f"EMAIL SENT FROM {Fore.GREEN}{sender_email}{Style.RESET_ALL} TO {Fore.BLUE}{receiver_email}{Style.RESET_ALL} WITH PHONE NUMBER {Fore.YELLOW}{phone_numbers[i]}{Style.RESET_ALL} IN SUBJECT")
             
             timestamp = datetime.now(timezone.utc).isoformat()
-            subprocess.run(["python3", "report.py", sender_email, phone_number, timestamp])
+            subprocess.run(["python3", "report.py", sender_email, phone_numbers[i], timestamp])
+            i += 1  # move to the next phone number after successful sending
 
         except Exception as e:
-            print(f"Error sending email from {sender_email}: {e}")
+            print(f"{Fore.RED}Error sending email from {sender_email}: {e}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}Retrying with the same email and phone number: {phone_numbers[i]}{Style.RESET_ALL}")
+            # Wait a moment before retrying
+            time.sleep(5)
 
-        if i < len(phone_numbers) - 1:
+        if i < len(phone_numbers):
             delay = random.randint(7, 15)
             for remaining in range(delay, 0, -1):
                 print(f"{Fore.YELLOW}Waiting {remaining} seconds before sending the next email...{Style.RESET_ALL}", end='\r')
@@ -178,6 +184,28 @@ def send_emails_in_range(config):
             print(f"{Fore.RED}Invalid input. Please try again.{Style.RESET_ALL}")
             input(f"{Fore.GREEN}Press Enter to retry...{Style.RESET_ALL}")
 
+# Function for inverse sending
+def inverse_sending(config):
+    while True:
+        clear_screen()
+        display_banner()
+        total_emails = len(config['senders'])
+        print(f"{Fore.LIGHTCYAN_EX}INVERSE SENDING{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}You have a total of {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} {Fore.GREEN}emails available.")
+        print(f"{Fore.GREEN}You can enter up to {Style.RESET_ALL}{Fore.YELLOW}{total_emails}{Style.RESET_ALL} {Fore.GREEN}phone numbers.{Style.RESET_ALL}")
+
+        phone_numbers = input(f"{Fore.GREEN}Enter phone numbers (separated by commas): {Style.RESET_ALL}").split(',')
+        phone_numbers = [number.strip() for number in phone_numbers]
+
+        if len(phone_numbers) > total_emails:
+            print(f"{Fore.RED}You can only enter up to {total_emails} phone numbers. Please try again.{Style.RESET_ALL}")
+            input(f"{Fore.GREEN}Press Enter to retry...{Style.RESET_ALL}")
+            continue
+
+        reversed_senders = list(reversed(config["senders"]))
+        send_emails(reversed_senders, config["receiver"], config["body"], config["subject"], phone_numbers)
+        input(f"{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
+        break
 
 # Load config
 config = load_config()
@@ -194,6 +222,8 @@ if config:
         elif choice == '3':
             send_emails_in_range(config)
         elif choice == '4':
+            inverse_sending(config)
+        elif choice == '5':
             print(f"{Fore.YELLOW}Exiting the program...{Style.RESET_ALL}")
             break
         else:
