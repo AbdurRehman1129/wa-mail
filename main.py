@@ -16,7 +16,7 @@ init(autoreset=True)
 # Load configuration from JSON
 def load_config(file_name="config.json"):
     try:
-        with open(file_name, 'r') as file:
+        with open(file_name, 'r', encoding='utf-8') as file:
             config = json.load(file)
         return config
     except Exception as e:
@@ -56,6 +56,7 @@ def show_menu(error_message=""):
         print(f"{Fore.RED}{error_message}{Style.RESET_ALL}")
 
 # Function to send emails with delay and random user-agent
+
 def send_emails(sender_emails, receiver_email, email_body, subject_template, phone_numbers):
     i = 0
     while i < len(phone_numbers):
@@ -69,31 +70,37 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
 
         if subject_template.count("{}") == 2:
             subject = subject_template.format(phone_numbers[i], phone_numbers[i])
-        else:
+        elif subject_template.count("{}") == 1 and email_body.count("{}") == 1:
             subject = subject_template.format(phone_numbers[i])
+            email__body = email_body.format(phone_numbers[i])
+        elif email_body.count("{}") == 2:
+            email__body = email_body.format(phone_numbers[i], phone_numbers[i])
+            subject = subject_template
 
         msg = EmailMessage()
         msg['From'] = sender_email
         msg['To'] = receiver_email
         msg['Subject'] = subject
-        msg.set_content(email_body)
+        msg.set_content(email__body)
 
-        try:
-            with smtplib.SMTP("smtp.gmail.com", 587) as server:
-                server.starttls()
-                server.login(sender_email, sender_password)
-                server.send_message(msg)
-                print(f"EMAIL SENT FROM {Fore.GREEN}{sender_email}{Style.RESET_ALL} TO {Fore.BLUE}{receiver_email}{Style.RESET_ALL} WITH PHONE NUMBER {Fore.YELLOW}{phone_numbers[i]}{Style.RESET_ALL} IN SUBJECT")
-            
-            timestamp = datetime.now(timezone.utc).isoformat()
-            subprocess.run(["python3", "report.py", sender_email, phone_numbers[i], timestamp])
-            i += 1  # move to the next phone number after successful sending
+        retries = 30  # Number of retries
+        for attempt in range(retries):
+            try:
+                with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as server:
+                    server.starttls()
+                    server.login(sender_email, sender_password)
+                    server.send_message(msg)
+                    print(f"EMAIL SENT FROM {Fore.GREEN}{sender_email}{Style.RESET_ALL} TO {Fore.BLUE}{receiver_email}{Style.RESET_ALL} WITH PHONE NUMBER {Fore.YELLOW}{phone_numbers[i]}{Style.RESET_ALL} IN SUBJECT")
+                break  # Exit retry loop on success
+            except Exception as e:
+                print(f"{Fore.RED}Attempt {attempt + 1} failed: {e}{Style.RESET_ALL}")
+                if attempt < retries - 1:
+                    time.sleep(5 * (attempt + 1))  # Exponential backoff
+                else:
+                    print(f"{Fore.RED}Failed to send email from {sender_email} after {retries} attempts.{Style.RESET_ALL}")
+                    return  # Exit if all retries fail
 
-        except Exception as e:
-            print(f"{Fore.RED}Error sending email from {sender_email}: {e}{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}Retrying with the same email and phone number: {phone_numbers[i]}{Style.RESET_ALL}")
-            # Wait a moment before retrying
-            time.sleep(5)
+        i += 1  # Move to the next phone number after successful sending
 
         if i < len(phone_numbers):
             delay = random.randint(7, 15)
@@ -101,7 +108,6 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
                 print(f"{Fore.YELLOW}Waiting {remaining} seconds before sending the next email...{Style.RESET_ALL}", end='\r')
                 time.sleep(1)
             print(" " * 50, end='\r')
-
 # Function for automatic sending
 def automatic_sending(config):
     while True:
