@@ -72,16 +72,16 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
             subject = subject_template.format(phone_numbers[i], phone_numbers[i])
         elif subject_template.count("{}") == 1 and email_body.count("{}") == 1:
             subject = subject_template.format(phone_numbers[i])
-            email__body = email_body.format(phone_numbers[i])
+            email_body = email_body.format(phone_numbers[i])
         elif email_body.count("{}") == 2:
-            email__body = email_body.format(phone_numbers[i], phone_numbers[i])
+            email_body = email_body.format(phone_numbers[i], phone_numbers[i])
             subject = subject_template
 
         msg = EmailMessage()
         msg['From'] = sender_email
         msg['To'] = receiver_email
         msg['Subject'] = subject
-        msg.set_content(email__body)
+        msg.set_content(email_body)
 
         retries = 30  # Number of retries
         for attempt in range(retries):
