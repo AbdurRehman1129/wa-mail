@@ -59,7 +59,8 @@ def show_menu(error_message=""):
 
 def send_emails(sender_emails, receiver_email, email_body, subject_template, phone_numbers):
     i = 0
-    while i < len(phone_numbers):
+    total = len(phone_numbers) 
+    while i < total:
         if not sender_emails:
             print(f"{Fore.RED}No sender emails available.{Style.RESET_ALL}")
             return
@@ -83,22 +84,22 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
         msg['Subject'] = subject
         msg.set_content(email_body)
 
-        retries = 30  # Number of retries
+        retries =  5 # Number of retries
         for attempt in range(retries):
             try:
                 with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as server:
                     server.starttls()
                     server.login(sender_email, sender_password)
                     server.send_message(msg)
-                    print(f"EMAIL SENT FROM {Fore.GREEN}{sender_email}{Style.RESET_ALL} TO {Fore.BLUE}{receiver_email}{Style.RESET_ALL} WITH PHONE NUMBER {Fore.YELLOW}{phone_numbers[i]}{Style.RESET_ALL} IN SUBJECT")
+                    print(f"{Fore.RED}{i+1}/{total}.{Style.RESET_ALL} EMAIL SENT FROM {Fore.GREEN}{sender_email}{Style.RESET_ALL} TO {Fore.BLUE}{receiver_email}{Style.RESET_ALL} WITH PHONE NUMBER {Fore.YELLOW}{phone_numbers[i]}{Style.RESET_ALL} IN SUBJECT")
                 break  # Exit retry loop on success
             except Exception as e:
-                print(f"{Fore.RED}Attempt {attempt + 1} failed: {e}{Style.RESET_ALL}")
+                print(f"{Fore.BLUE}ATTEMPT {attempt + 1} FAILED:{Style.RESET_ALL} {Fore.RED}{e}{Style.RESET_ALL}")
                 if attempt < retries - 1:
                     time.sleep(5 * (attempt + 1))  # Exponential backoff
                 else:
-                    print(f"{Fore.RED}Failed to send email from {sender_email} after {retries} attempts.{Style.RESET_ALL}")
-                    return  # Exit if all retries fail
+                    print(f"{Fore.RED}Failed to send email from{Style.RESET_ALL} {Fore.GREEN}{sender_email}{Style.RESET_ALL} {Fore.RED}after {retries} attempts.{Style.RESET_ALL}")
+                      # Exit if all retries fail
 
         i += 1  # Move to the next phone number after successful sending
 
@@ -107,7 +108,7 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
             for remaining in range(delay, 0, -1):
                 print(f"{Fore.YELLOW}Waiting {remaining} seconds before sending the next email...{Style.RESET_ALL}", end='\r')
                 time.sleep(1)
-            print(" " * 50, end='\r')
+            print(" " * 55, end='\r')
 # Function for automatic sending
 def automatic_sending(config):
     while True:
