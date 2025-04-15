@@ -77,6 +77,9 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
         elif email_body.count("{}") == 2:
             email_body = email_body.format(phone_numbers[i], phone_numbers[i])
             subject = subject_template
+        elif email_body.count("{}") == 1:
+            email_body = email_body.format(phone_numbers[i])
+            subject = subject_template
 
         msg = EmailMessage()
         msg['From'] = sender_email
