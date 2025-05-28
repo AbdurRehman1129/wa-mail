@@ -59,7 +59,7 @@ def show_menu(error_message=""):
 
 def send_emails(sender_emails, receiver_email, email_body, subject_template, phone_numbers):
     i = 0
-    total = len(phone_numbers) 
+    total = len(phone_numbers)
     while i < total:
         if not sender_emails:
             print(f"{Fore.RED}No sender emails available.{Style.RESET_ALL}")
@@ -69,25 +69,27 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
         sender_email = sender["email"]
         sender_password = sender["password"]
 
+        # Initialize subject and email_body with default values
+        subject = subject_template
+        body = email_body
+
+        # Format subject and body based on placeholders
         if subject_template.count("{}") == 2:
             subject = subject_template.format(phone_numbers[i], phone_numbers[i])
-        elif subject_template.count("{}") == 1 and email_body.count("{}") == 1:
+        elif subject_template.count("{}") == 1:
             subject = subject_template.format(phone_numbers[i])
-            email_body = email_body.format(phone_numbers[i])
-        elif email_body.count("{}") == 2:
-            email_body = email_body.format(phone_numbers[i], phone_numbers[i])
-            subject = subject_template
+        if email_body.count("{}") == 2:
+            body = email_body.format(phone_numbers[i], phone_numbers[i])
         elif email_body.count("{}") == 1:
-            email_body = email_body.format(phone_numbers[i])
-            subject = subject_template
+            body = email_body.format(phone_numbers[i])
 
         msg = EmailMessage()
         msg['From'] = sender_email
         msg['To'] = receiver_email
         msg['Subject'] = subject
-        msg.set_content(email_body)
+        msg.set_content(body)
 
-        retries =  5 # Number of retries
+        retries = 5  # Number of retries
         for attempt in range(retries):
             try:
                 with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as server:
@@ -102,7 +104,6 @@ def send_emails(sender_emails, receiver_email, email_body, subject_template, pho
                     time.sleep(5 * (attempt + 1))  # Exponential backoff
                 else:
                     print(f"{Fore.RED}Failed to send email from{Style.RESET_ALL} {Fore.GREEN}{sender_email}{Style.RESET_ALL} {Fore.RED}after {retries} attempts.{Style.RESET_ALL}")
-                      # Exit if all retries fail
 
         i += 1  # Move to the next phone number after successful sending
 
